@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Ranking - Dashboard</title>
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #00cc66;
+            --primary-dark: #00aa55;
+            --primary-light: #33ff99;
+            --secondary: #222222;
+            --card-bg: #252525;
+            --dark-bg: #1a1a1a;
+            --text-light: #e0e0e0;
+            --text-highlight: #b3ffb3;
+            --accent: #ffd700;
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 6px 15px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            background-image: 
+                radial-gradient(circle at 30% 20%, rgba(0, 204, 102, 0.05) 0%, transparent 200px),
+                radial-gradient(circle at 80% 80%, rgba(0, 204, 102, 0.03) 0%, transparent 200px);
+            color: var(--text-light);
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .page-title h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 204, 102, 0.3);
+        }
+
+        .page-title p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.8;
+        }
+
+        .page-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background-color: var(--primary);
+            border-radius: 50px;
+        }
+
+        .search-bar {
+            margin-bottom: 30px;
+            display: flex;
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 14px 20px;
+            padding-left: 45px;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 204, 102, 0.2);
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            padding: 8px 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background-color: var(--primary);
+            color: #1a1a1a;
+        }
+
+        .filter-btn i {
+            font-size: 0.9rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            transition: var(--transition);
+            position: relative;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            position: relative;
+            padding: 20px;
+            padding-left: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: linear-gradient(to right, var(--primary-dark), var(--card-bg));
+        }
+
+        .card-header:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: var(--primary);
+        }
+
+        .card h2 {
+            color: #ffffff;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        .card-footer {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background-color: rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: rgba(0, 204, 102, 0.1);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 10px;
+            margin-bottom: 5px;
+        }
+
+        .card-feature {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .feature-icon {
+            color: var(--primary);
+            font-size: 1rem;
+            margin-top: 3px;
+        }
+
+        .feature-content {
+            flex-grow: 1;
+        }
+
+        .feature-name {
+            color: var(--text-highlight);
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .stars {
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        .rating-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 50px;
+            transition: width 1s ease-in-out;
+        }
+
+        .divider {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 15px 0;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: var(--transition);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #1a1a1a;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: #1a1a1a;
+        }
+
+        .rating-large {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        .animate-slideUp {
+            animation: slideUp 0.8s ease forwards;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Footer */
+        footer {
+            background-color: rgba(26, 26, 26, 0.9);
+            padding: 40px 0;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .footer-column {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .footer-title {
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background-color: var(--primary);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-block;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .footer-links a:before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+            padding-left: 20px;
+        }
+
+        .footer-links a:hover:before {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            margin-top: 40px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+
+        .social-icon:hover {
+            background-color: var(--primary);
+            color: #1a1a1a;
+            transform: translateY(-5px);
+        }
+
+        /* Media Queries para Responsividad */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: var(--secondary);
+                padding: 20px;
+                flex-direction: column;
+                z-index: 100;
+                box-shadow: var(--shadow-md);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .card-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 40px;
+            }
+
+            .page-title h1 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title h1 {
+                font-size: 1.8rem;
+            }
+
+            .filters {
+                gap: 10px;
+            }
+
+            .filter-btn {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo animate-fadeIn">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Rank</span>
+                </div>
+                <nav>
+                    <button class="hamburger" id="menu-toggle" aria-label="Toggle menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="nav-links" id="nav-links">
+                        <a href="#"><i class="fas fa-home"></i> Inicio</a>
+                        <a href="#"><i class="fas fa-chart-bar"></i> Comparativas</a>
+                        <a href="#"><i class="fas fa-newspaper"></i> Noticias</a>
+                        <a href="#"><i class="fas fa-info-circle"></i> Acerca de</a>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="page-title animate-fadeIn">
+            <h1>AI's Disponibles</h1>
+            <p>Comparativa de las IAs más populares con análisis detallado de sus características</p>
+        </div>
+
+        <div class="search-bar animate-fadeIn">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Buscar AI por nombre o característica..." id="search-input">
+        </div>
+
+        <div class="filters animate-fadeIn">
+            <button class="filter-btn active"><i class="fas fa-border-all"></i> Todos</button>
+            <button class="filter-btn"><i class="fas fa-video"></i> Creación de videos</button>
+            <button class="filter-btn"><i class="fas fa-comment-alt"></i> Chat</button>
+            <button class="filter-btn"><i class="fas fa-image"></i> Imágenes</button>
+            <button class="filter-btn"><i class="fas fa-star"></i> Top Rated</button>
+        </div>
+
+        <div class="card-grid">
+            <!-- Runway -->
+            <div class="card animate-slideUp" style="animation-delay: 0.1s">
+                <div class="card-header">
+                    <h2><i class="fas fa-video"></i> Runway</h2>
+                </div>
+                <div class="card-body">
+                    <div class="tags">
+                        <span class="badge"><i class="fas fa-video"></i> Video</span>
+                        <span class="badge"><i class="fas fa-magic"></i> Generativo</span>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-cogs"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Función</div>
+                            <div>Creación de videos</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-coins"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Tokens</div>
+                            <div>80 permanentes</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-calculator"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Tokens por video</div>
+                            <div>40 (Tokens únicos)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-magic"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Coherencia</div>
+                            <div>
+                                <span class="stars">★★★★☆</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 80%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-clock"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Tiempo de creación</div>
+                            <div>~2 minutos</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div class="card-footer">
+                    <div>
+                        <span class="rating-label">Calificación</span>
+                        <span class="rating-large stars">★★★★☆</span>
+                    </div>
+                    <a href="https://app.runwayml.com" target="_blank" class="btn btn-primary"><i class="fas fa-external-link-alt"></i> Visitar</a>
+                </div>
+            </div>
+
+            <!-- Hailuo AI -->
+            <div class="card animate-slideUp" style="animation-delay: 0.2s">
+                <div class="card-header">
+                    <h2><i class="fas fa-video"></i> Hailuo AI</h2>
+                </div>
+                <div class="card-body">
+                    <div class="tags">
+                        <span class="badge"><i class="fas fa-video"></i> Video</span>
+                        <span class="badge"><i class="fas fa-sync-alt"></i> Tokens Diarios</span>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-cogs"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Función</div>
+                            <div>Creación de videos</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-coins"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Tokens diarios</div>
+                            <div>100 (Renovables cada día)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-calculator"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Tokens por video</div>
+                            <div>30</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-magic"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Coherencia</div>
+                            <div>
+                                <span class="stars">★★★★⋆</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 84%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-clock"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Tiempo de creación</div>
+                            <div>~10 minutos (Máximo 5 horas)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div class="card-footer">
+                    <div>
+                        <span class="rating-label">Calificación</span>
+                        <span class="rating-large stars">★★★★☆</span>
+                    </div>
+                    <a href="https://hailuoai.video/create" target="_blank" class="btn btn-primary"><i class="fas fa-external-link-alt"></i> Visitar</a>
+                </div>
+            </div>
+
+            <!-- Grok -->
+            <div class="card animate-slideUp" style="animation-delay: 0.3s">
+                <div class="card-header">
+                    <h2><i class="fas fa-robot"></i> Grok</h2>
+                </div>
+                <div class="card-body">
+                    <div class="tags">
+                        <span class="badge"><i class="fas fa-comment-alt"></i> Chat</span>
+                        <span class="badge"><i class="fas fa-image"></i> Imágenes</span>
+                        <span class="badge pulse"><i class="fas fa-fire"></i> Popular</span>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-cogs"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Función</div>
+                            <div>Chat & Creación de imágenes</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-comment-dots"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Mensajes diarios</div>
+                            <div>1,440 (Límite por día)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-hourglass-half"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Tiempo de espera tras límite</div>
+                            <div>30 minutos</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-magic"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Coherencia</div>
+                            <div>
+                                <span class="stars">★★★★★</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 90%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-bolt"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Velocidad de respuesta</div>
+                            <div>Rápida ⚡</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div class="card-footer">
+                    <div>
+                        <span class="rating-label">Calificación</span>
+                        <span class="rating-large stars">★★★★★</span>
+                    </div>
+                    <a href="https://x.ai" target="_blank" class="btn btn-primary"><i class="fas fa-external-link-alt"></i> Visitar</a>
+                </div>
+            </div>
+
+            <!-- Llama 3.1 Nemotron 70B -->
+            <div class="card animate-slideUp" style="animation-delay: 0.4s">
+                <div class="card-header">
+                    <h2><i class="fas fa-brain"></i> Llama 3.1</h2>
+                </div>
+                <div class="card-body">
+                    <div class="tags">
+                        <span class="badge"><i class="fas fa-comment-alt"></i> Chat</span>
+                        <span class="badge"><i class="fas fa-microchip"></i> NVIDIA</span>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-cogs"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Función</div>
+                            <div>Chat</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-magic"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Coherencia</div>
+                            <div>
+                                <span class="stars">★★★☆☆</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 70%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-comment-alt"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Naturalidad</div>
+                            <div>
+                                <span class="stars">★★★★★</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 100%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-feature">
+                        <span class="feature-icon"><i class="fas fa-eye"></i></span>
+                        <div class="feature-content">
+                            <div class="feature-name">Realismo</div>
+                            <div>
+                                <span class="stars">★★★★☆</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 80%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div class="card-footer">
+                    <div>
+                        <span class="rating-label">Calificación</span>
+                        <span class="rating-large stars">★★★★☆</span>
+                    </div>
+                    <a href="https://build.nvidia.com/nvidia/llama-3_1-nemotron-70b-instruct" target="_blank" class="btn btn-primary"><i class="fas fa-external-link-alt"></i> Visitar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3 class="footer-title">AI Rank</h3>
+                    <p>Explora y compara las mejores IAs del mercado con análisis detallados y actualizados.</p>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-github"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">Enlaces Útiles</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Inicio</a></li>
+                        <li><a href="#">Comparativas</a></li>
+                        <li><a href="#">Noticias</a></li>
+                        <li><a href="#">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">Recursos</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Documentación</a></li>
+                        <li><a href="#">API</a></li>
+                        <li><a href="#">Soporte</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 AI Rank. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Toggle mobile menu
+        const menuToggle = document.getElementById('menu-toggle');
+        const navLinks = document.getElementById('nav-links');
+        
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
